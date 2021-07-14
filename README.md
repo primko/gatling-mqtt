@@ -16,22 +16,18 @@ Additionally this extended version doesn't take into account connect and disconn
 
 ## Usage
 
+### Scala & SBT
+
+1. Install OpenJDK 8 or 11
+2. Instal SBT
+   1. https://www.scala-sbt.org/1.x/docs/Setup.html
+
 ### Cloning this repository
 
     $ git clone https://github.com/thingsboard/gatling-mqtt.git
     $ cd gatling-mqtt
-    
-### Scala
-    $ sudo apt-get remove scala-library scala
-    $ sudo wget http://scala-lang.org/files/archive/scala-2.11.8.deb
-    $ sudo dpkg -i scala-2.11.8.deb
-
-### Install SBT
-    $ curl -L -o sbt.deb http://dl.bintray.com/sbt/debian/sbt-0.13.17.deb
-    $ sudo dpkg -i sbt.deb
 
 ### Creating a jar file
-And create a jar file:
 
     $ sbt assembly
 
@@ -39,22 +35,16 @@ If you want to change the version of Gatling used to create a jar file,
 change the following line in [`build.sbt`](build.sbt):
 
 ```scala
-"io.gatling" % "gatling-core" % "2.2.3" % "provided",
+"io.gatling" % "gatling-core" % "3.6.1" % "provided",
 ```
 
 and run `sbt assembly`.
 
 ### Putting the jar file to lib directory
 
-Put the jar file to `lib` directory in Gatling:
+Put the jar file to `./lib` directory in your SBT project:
 
-    $ cp target/scala-2.11/gatling-mqtt-assembly-*.jar /path/to/gatling-charts-highcharts-bundle-2.2.*/lib
-
-###  Creating a simulation file
-
-    $ cp gatling-mqtt/src/test/scala/com/github/mnogu/gatling/mqtt/test/MqttSimulation.scala /path/to/gatling-charts-highcharts-bundle-2.2.*/user-files/simulations
-    $ cd /path/to/gatling-charts-highcharts-bundle-2.2.*
-    $ vi user-files/simulations/MqttSimulation.scala
+    $ cp target/scala-2.13/gatling-mqtt-assembly-*.jar /path/to/sbt/project/lib/
 
 This plugin supports the following options:
 
@@ -87,7 +77,7 @@ That is, you can obtain an option name in this plugin
 by removing `set` from a method name in mqtt-client
 and then making the first character lowercase.
 
-The following options also support [Expression](http://gatling.io/docs/2.2.3/session/expression_el.html):
+The following options also support [Expression](https://gatling.io/docs/gatling/reference/3.6/session/expression_el/):
 
 * host
 * clientId
@@ -100,32 +90,24 @@ The following options also support [Expression](http://gatling.io/docs/2.2.3/ses
 Here is a sample simulation file:
 
 ```scala
+import com.github.mnogu.gatling.mqtt.Predef._
 import io.gatling.core.Predef._
 import org.fusesource.mqtt.client.QoS
-import scala.concurrent.duration._
 
-import com.github.mnogu.gatling.mqtt.Predef._
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 class MqttSimulation extends Simulation {
-
-  val mqttConf = mqtt
-     // MQTT broker
-    .host("tcp://localhost:1883")
+  val mqttConf = mqtt.host("tcp://localhost:1883")
 
   val connect = exec(mqtt("connect")
     .connect())
 
-   // send 100 publish MQTT messages
   val publish = repeat(100) {
     exec(mqtt("publish")
-       // topic: "foo"
-       // payload: "Hello"
-       // QoS: AT_LEAST_ONCE
-       // retain: false
       .publish("foo", "Hello", QoS.AT_LEAST_ONCE, retain = false))
-       // 1 seconds pause between sending messages
       .pause(1000 milliseconds)
-    }
+  }
 
   val disconnect = exec(mqtt("disconnect")
     .disconnect())
@@ -134,11 +116,10 @@ class MqttSimulation extends Simulation {
     .exec(connect, publish, disconnect)
 
   setUp(
-    scn
-       // linearly connect 10 devices over 1 seconds and send 100 publish messages
-      .inject(rampUsers(10) over (1 seconds))
+    scn.inject(rampUsers(10).during(1.seconds))
   ).protocols(mqttConf)
 }
+
 ```
 
 The following parameters of `publish()` support Expression:
@@ -149,11 +130,12 @@ The following parameters of `publish()` support Expression:
 Here is a bit complex sample simulation file:
 
 ```scala
+import com.github.mnogu.gatling.mqtt.Predef._
 import io.gatling.core.Predef._
 import org.fusesource.mqtt.client.QoS
-import scala.concurrent.duration._
 
-import com.github.mnogu.gatling.mqtt.Predef._
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 class MqttSimulation extends Simulation {
 
@@ -196,16 +178,10 @@ class MqttSimulation extends Simulation {
   setUp(
     scn
        // linearly connect 10 devices over 1 seconds and send 100 publish messages
-      .inject(rampUsers(10) over (1 seconds))
+      .inject(rampUsers(10).during(1.seconds))
   ).protocols(mqttConf)
 }
 ```
-
-### Running a stress test
-
-After starting an MQTT broker, run a stress test:
-
-    $ bin/gatling.sh
 
 ## License
 
