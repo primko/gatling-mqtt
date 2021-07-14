@@ -20,7 +20,8 @@ class MqttRequestPublishActionBuilder(mqttAttributes: MqttAttributes)
       mqttAttributes,
       coreComponents,
       mqttComponents.mqttProtocol,
-      next
+      next,
+      coreComponents.clock
     )
   }
 }

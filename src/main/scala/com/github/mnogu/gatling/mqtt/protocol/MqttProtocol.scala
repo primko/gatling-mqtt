@@ -36,22 +36,17 @@ object MqttProtocol {
       maxReadRate = None,
       maxWriteRate = None))
 
-  val MqttProtocolKey = new ProtocolKey {
+  val MqttProtocolKey: ProtocolKey[MqttProtocol, MqttComponents] = new ProtocolKey[MqttProtocol, MqttComponents] {
 
-    type Protocol = MqttProtocol
-    type Components = MqttComponents
+    override def protocolClass: Class[Protocol] = classOf[MqttProtocol].asInstanceOf[Class[io.gatling.core.protocol.Protocol]]
 
-    def protocolClass: Class[io.gatling.core.protocol.Protocol] = classOf[MqttProtocol].asInstanceOf[Class[io.gatling.core.protocol.Protocol]]
+    override def defaultProtocolValue(configuration: GatlingConfiguration): MqttProtocol = MqttProtocol(configuration)
 
-    def defaultProtocolValue(configuration: GatlingConfiguration): MqttProtocol = MqttProtocol(configuration)
-
-    def newComponents(system: ActorSystem, coreComponents: CoreComponents): MqttProtocol => MqttComponents = {
-
-      mqttProdocol => {
+    override def newComponents(coreComponents: CoreComponents): MqttProtocol => MqttComponents = {
+      mqttProtocol => {
         val mqttComponents = MqttComponents (
-          mqttProdocol
+          mqttProtocol
         )
-
         mqttComponents
       }
     }

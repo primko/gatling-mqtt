@@ -20,7 +20,8 @@ class MqttRequestConnectActionBuilder(requestName: Expression[String])
       requestName,
       coreComponents,
       mqttComponents.mqttProtocol,
-      next
+      next,
+      coreComponents.clock
     )
   }
 }

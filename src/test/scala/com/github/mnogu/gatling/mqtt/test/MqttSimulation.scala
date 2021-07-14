@@ -5,6 +5,7 @@ import io.gatling.core.Predef._
 import org.fusesource.mqtt.client.QoS
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 class MqttSimulation extends Simulation {
   val mqttConf = mqtt.host("tcp://localhost:1883")
@@ -25,7 +26,6 @@ class MqttSimulation extends Simulation {
     .exec(connect, publish, disconnect)
 
   setUp(
-    scn
-      .inject(rampUsers(10) over (1 seconds))
+    scn.inject(rampUsers(10).during(1.seconds))
   ).protocols(mqttConf)
 }

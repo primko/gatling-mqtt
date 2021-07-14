@@ -67,3 +67,10 @@ project/build.properties
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+
+# VSCode Scala extension specific
+.bloop/
+.metals/
+.vscode/
+project/project/
+metals.sbt
