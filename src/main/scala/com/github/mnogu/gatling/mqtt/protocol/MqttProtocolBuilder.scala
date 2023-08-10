@@ -2,6 +2,8 @@ package com.github.mnogu.gatling.mqtt.protocol
 
 import io.gatling.core.config.GatlingConfiguration
 
+import scala.language.implicitConversions
+
 /**
   *
   */
@@ -15,6 +17,6 @@ object MqttProtocolBuilder {
 
 case class MqttProtocolBuilder(mqttProtocol : MqttProtocol) {
 
-    def build = mqttProtocol
+    def build: MqttProtocol = mqttProtocol
 
 }

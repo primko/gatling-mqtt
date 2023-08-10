@@ -6,7 +6,7 @@ import io.gatling.core.config.GatlingConfiguration
 import io.gatling.core.session.Expression
 
 object Predef {
-  def mqtt(implicit configuration: GatlingConfiguration) = MqttProtocolBuilder(configuration)
+  def mqtt(implicit configuration: GatlingConfiguration): MqttProtocolBuilder = MqttProtocolBuilder(configuration)
 
   def mqtt(requestName: Expression[String]) =
     new MqttRequestBuilder(requestName)

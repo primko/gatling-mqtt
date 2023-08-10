@@ -8,7 +8,7 @@ import io.gatling.commons.validation.Validation
 import io.gatling.core.CoreComponents
 import io.gatling.core.action.{Action, ExitableAction}
 import io.gatling.core.session._
-import io.gatling.core.stats.message.ResponseTimings
+import io.gatling.core.stats.StatsEngine
 import io.gatling.core.util.NameGen
 import org.fusesource.mqtt.client.{Callback, CallbackConnection, QoS}
 
@@ -20,12 +20,12 @@ class MqttRequestPublishAction(
   val clock: Clock)
    extends ExitableAction with NameGen {
 
-  val statsEngine = coreComponents.statsEngine
+  val statsEngine: StatsEngine = coreComponents.statsEngine
 
-  override val name = genName("mqttPublish")
+  override val name: String = genName("mqttPublish")
 
   override def execute(session: Session): Unit = recover(session) {
-    val connection = session.attributes.get("connection").get.asInstanceOf[CallbackConnection]
+    val connection = session.attributes("connection").asInstanceOf[CallbackConnection]
 
     mqttAttributes.requestName(session).flatMap { resolvedRequestName =>
       mqttAttributes.topic(session).flatMap { resolvedTopic =>

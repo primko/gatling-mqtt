@@ -1,14 +1,13 @@
 package com.github.mnogu.gatling.mqtt.action
 
 import com.github.mnogu.gatling.mqtt.protocol.MqttProtocol
-import io.gatling.commons.stats.OK
 import io.gatling.commons.util.Clock
 import io.gatling.commons.validation.Validation
 import io.gatling.core.CoreComponents
 import io.gatling.core.Predef._
 import io.gatling.core.action.{Action, ExitableAction}
 import io.gatling.core.session._
-import io.gatling.core.stats.message.ResponseTimings
+import io.gatling.core.stats.StatsEngine
 import io.gatling.core.util.NameGen
 import org.fusesource.mqtt.client.{Callback, MQTT}
 
@@ -20,9 +19,9 @@ class MqttRequestConnectAction(
   val clock: Clock)
    extends ExitableAction with NameGen {
 
-  val statsEngine = coreComponents.statsEngine
+  val statsEngine: StatsEngine = coreComponents.statsEngine
 
-  override val name = genName("mqttConnect")
+  override val name: String = genName("mqttConnect")
 
   private def configureHost(session: Session)(mqtt: MQTT): Validation[MQTT] = {
     mqttProtocol.host match {
@@ -94,7 +93,7 @@ class MqttRequestConnectAction(
     }
   }
 
-  private def configureOptions(mqtt: MQTT) = {
+  private def configureOptions(mqtt: MQTT): Unit = {
     // optionPart
     val cleanSession = mqttProtocol.optionPart.cleanSession
     if (cleanSession.isDefined) {
